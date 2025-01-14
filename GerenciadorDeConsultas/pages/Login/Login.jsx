@@ -13,6 +13,9 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    // Limpa o erro antes de uma nova tentativa
+    setError("");
+
     try {
       const response = await axios.post(
         "https://localhost:7250/api/Login/login",
@@ -23,11 +26,20 @@ const Login = () => {
         }
       );
 
+      // Se a resposta for 200, então login bem-sucedido
       if (response.status === 200) {
         const data = response.data;
 
-        // Armazena o token no localStorage
+        // Armazena o token, role e id no localStorage
         localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.role);
+        localStorage.setItem("id", data.id); // Armazenando o ID de usuário
+
+        // Exibe ID do médico se for o caso
+        if (data.role === "medico" && data.id) {
+          localStorage.setItem("medicoId", data.id);
+          console.log("ID do médico salvo no localStorage:", data.id);
+        }
 
         // Redireciona para o dashboard de acordo com o papel
         if (data.role === "medico") {
@@ -37,8 +49,13 @@ const Login = () => {
         }
       }
     } catch (err) {
-      console.error("Erro de login:", err); // Log detalhado do erro
-      setError(err.response ? err.response.data : "Erro desconhecido");
+      console.error("Erro de login:", err);
+      // Exibe uma mensagem de erro caso a API retorne algum erro
+      if (err.response) {
+        setError(err.response.data); // Mensagem de erro da API
+      } else {
+        setError("Erro desconhecido. Tente novamente mais tarde.");
+      }
     }
   };
 
