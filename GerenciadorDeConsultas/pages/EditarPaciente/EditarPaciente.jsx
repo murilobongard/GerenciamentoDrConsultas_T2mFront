@@ -13,7 +13,7 @@ const EditarPaciente = () => {
   const buscarPaciente = async () => {
     try {
       const response = await axios.get(
-        `https://localhost:7250/api/Pacientes/medico/${id}`
+        `https://localhost:7250/api/Pacientes/${id}`
       );
       setNome(response.data.nome);
       setTelefone(response.data.telefone);
