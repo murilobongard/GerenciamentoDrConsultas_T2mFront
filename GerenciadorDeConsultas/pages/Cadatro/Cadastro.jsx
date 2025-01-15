@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios"; // Importando Axios
-import { useNavigate } from "react-router-dom"; // Importando useNavigate
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./Cadastro.css";
 
 function Cadastro() {
@@ -16,19 +16,19 @@ function Cadastro() {
   });
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [isMedico, setIsMedico] = useState(false); // Estado para verificar se é médico
+  const [isMedico, setIsMedico] = useState(false);
 
-  const navigate = useNavigate(); // Hook para navegação
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleRoleChange = (e) => {
-    setIsMedico(e.target.value === "medico"); // Alterar isMedico conforme a seleção
+    setIsMedico(e.target.value === "medico");
     setFormData({
       ...formData,
-      crm: "", // Limpar o CRM e especialidade ao mudar de role
+      crm: "",
       especialidade: "",
     });
   };
@@ -37,7 +37,6 @@ function Cadastro() {
     e.preventDefault();
 
     try {
-      // Monta o payload com base no tipo de usuário (médico ou paciente)
       const payload = isMedico
         ? {
             nome: formData.nome,
@@ -55,15 +54,12 @@ function Cadastro() {
             senha: formData.senha,
           };
 
-      // Definindo a URL para o tipo de cadastro
       const url = isMedico
         ? "https://localhost:7250/api/Medico"
         : "https://localhost:7250/api/Paciente";
 
-      // Realizando a requisição POST usando Axios
       const response = await axios.post(url, payload);
 
-      // Se a resposta for OK
       if (response.status === 200) {
         setSuccessMessage("Cadastro realizado com sucesso!");
         setErrorMessage("");
@@ -78,10 +74,9 @@ function Cadastro() {
           especialidade: "",
         });
 
-        // Redirecionar para a página de login
         setTimeout(() => {
-          navigate("/"); // Redireciona para a página de login
-        }, 2000); // Aguarda 2 segundos para o usuário visualizar a mensagem de sucesso
+          navigate("/");
+        }, 2000);
       }
     } catch (err) {
       // Erro ao cadastrar
@@ -105,7 +100,6 @@ function Cadastro() {
           />
         </label>
 
-        {/* Seleção entre Médico ou Paciente */}
         <label>
           Tipo de Usuário:
           <select
@@ -117,7 +111,6 @@ function Cadastro() {
           </select>
         </label>
 
-        {/* Campos adicionais para Paciente */}
         {!isMedico && (
           <>
             <label>
@@ -153,7 +146,6 @@ function Cadastro() {
           </>
         )}
 
-        {/* Campos adicionais para Médico */}
         {isMedico && (
           <>
             <label>

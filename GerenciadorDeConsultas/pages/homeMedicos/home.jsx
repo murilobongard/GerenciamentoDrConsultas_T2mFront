@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./home.css";
 
 const Dashboard = () => {
@@ -8,16 +9,14 @@ const Dashboard = () => {
   const [modalContent, setModalContent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [medicoLogado, setMedicoLogado] = useState(null);
+  const navigate = useNavigate();
 
-  // Obtendo o ID do médico diretamente do localStorage
   const medicoId = localStorage.getItem("medicoId");
-  console.log("medicoId:", medicoId);
   if (!medicoId) {
     console.error("ID do médico não encontrado.");
-    return null; // Retorna null ou exibe algo indicando que o médico não está logado
+    return null;
   }
 
-  // Função para buscar dados do médico logado
   const fetchMedicoLogado = async () => {
     try {
       const response = await axios.get(
@@ -29,20 +28,17 @@ const Dashboard = () => {
     }
   };
 
-  // Função para buscar consultas
   const fetchConsultas = async () => {
     try {
       const response = await axios.get(
         `https://localhost:7250/api/consultas/medico/${medicoId}`
       );
-      console.log(response.data); // Adicione esta linha para verificar os dados retornados
       setConsultas(response.data);
     } catch (error) {
       console.error("Erro ao buscar consultas:", error);
     }
   };
 
-  // Função para buscar pacientes
   const fetchPacientes = async () => {
     try {
       const response = await axios.get(
@@ -54,7 +50,6 @@ const Dashboard = () => {
     }
   };
 
-  // Abrir modal com conteúdo específico
   const openModal = (contentType) => {
     setModalContent(contentType);
     setIsModalOpen(true);
@@ -62,23 +57,21 @@ const Dashboard = () => {
     if (contentType === "pacientes") fetchPacientes();
   };
 
-  // Fechar modal
   const closeModal = () => {
     setIsModalOpen(false);
     setModalContent(null);
   };
 
-  // Funções de editar/excluir/adicionar observações
-  const editItem = (id) => {
-    console.log("Editar item com ID:", id);
+  const editPaciente = (id) => {
+    navigate(`/editarPaciente/${id}`);
   };
 
   const deleteItem = (id) => {
     console.log("Excluir item com ID:", id);
   };
 
-  const addObservation = (id, observation) => {
-    console.log(`Adicionar observação para paciente ID ${id}:`, observation);
+  const goToCadastrarPaciente = () => {
+    navigate("/cadastrarPaciente");
   };
 
   useEffect(() => {
@@ -87,12 +80,10 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      {/* Navbar */}
       <header className="dashboard-header">
         <h1 className="Titulo">Sistema de Gerenciamento de Consultas</h1>
       </header>
 
-      {/* Corpo da página */}
       <div className="dashboard-center">
         <div className="button-container">
           <button onClick={() => openModal("consultas")}>
@@ -101,10 +92,11 @@ const Dashboard = () => {
           <button onClick={() => openModal("pacientes")}>
             Lista de Pacientes
           </button>
+          <button onClick={goToCadastrarPaciente}>Cadastrar Paciente</button>{" "}
+          {/* Botão de Cadastro */}
         </div>
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
         <div className="modal">
           <div className="modal-content">
@@ -118,7 +110,7 @@ const Dashboard = () => {
                 consultas.map((consulta) => (
                   <li key={consulta.id}>
                     {consulta.data} - {consulta.paciente.nome}
-                    <button onClick={() => editItem(consulta.id)}>
+                    <button onClick={() => editPaciente(consulta.id)}>
                       Editar
                     </button>
                     <button onClick={() => deleteItem(consulta.id)}>
@@ -130,18 +122,11 @@ const Dashboard = () => {
                 pacientes.map((paciente) => (
                   <li key={paciente.id}>
                     {paciente.nome}
-                    <button onClick={() => editItem(paciente.id)}>
+                    <button onClick={() => editPaciente(paciente.id)}>
                       Editar
                     </button>
                     <button onClick={() => deleteItem(paciente.id)}>
                       Excluir
-                    </button>
-                    <button
-                      onClick={() =>
-                        addObservation(paciente.id, "Nova observação")
-                      }
-                    >
-                      Adicionar Observação
                     </button>
                   </li>
                 ))}
